@@ -51,7 +51,7 @@ namespace Lox
         }
 
         /// <summary>
-        /// Prints out the tokens in the console.
+        /// Prints out the tokens to the console.
         /// </summary>
         private static void Run(string source)
         {
@@ -67,7 +67,7 @@ namespace Lox
         }
 
         /// <summary>
-        /// Logs error to the terminal.
+        /// Logs error to the console.
         /// </summary>
         public static void Error(int line, string message)
         {
