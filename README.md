@@ -11,4 +11,4 @@ C# implementation of the Lox interpreter in <i>Crafting Interpreters</i> by Robe
 
 ### Current progress!
 
-`4.5.1 Scanning / Recognizing Lexemes / Operators`
+`5.1.1 Representing Code / Context-Free Grammars / Rules for Grammars`
