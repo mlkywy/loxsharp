@@ -9,11 +9,11 @@ namespace Lox
         private readonly string _source;
         private readonly List<Token> _tokens = new();
 
-        private int start = 0;
-        private int current = 0;
-        private int line = 1;
+        private int _start = 0;
+        private int _current = 0;
+        private int _line = 1;
 
-        private readonly Dictionary<string, TokenType> keywords = new Dictionary<string, TokenType>
+        private readonly Dictionary<string, TokenType> _keywords = new Dictionary<string, TokenType>
         {
             { "and", TokenType.AND },
             { "class", TokenType.CLASS },
@@ -46,11 +46,11 @@ namespace Lox
             while (!IsAtEnd())
             {
                 // We are at the beginning of the next lexeme.
-                start = current;
+                _start = _current;
                 ScanToken();
             }
 
-            _tokens.Add(new Token(TokenType.EOF, "", null, line));
+            _tokens.Add(new Token(TokenType.EOF, "", null, _line));
             return _tokens;
         }
 
@@ -90,7 +90,7 @@ namespace Lox
                 case '\t':
                     // Ignore whitespace.
                     break;
-                case '\n': line++; break;
+                case '\n': _line++; break;
                 case '"': String(); break;
                 default: 
                     if (IsDigit(c))
@@ -103,7 +103,7 @@ namespace Lox
                     }
                     else
                     {
-                        Lox.Error(line, "Unexpected character.");
+                        Lox.Error(_line, "Unexpected character.");
                     }
                     break;
             }
@@ -114,9 +114,9 @@ namespace Lox
         {
             while (IsAlphaNumeric(Peek())) Advance();
 
-            string text = _source.Substring(start, current);
+            string text = _source.Substring(_start, _current);
 
-            if (!keywords.TryGetValue(text, out TokenType type))
+            if (!_keywords.TryGetValue(text, out TokenType type))
             {
                 type = TokenType.IDENTIFIER;
             }
@@ -136,7 +136,7 @@ namespace Lox
                 while (IsDigit(Peek())) Advance();
             }
 
-            AddToken(TokenType.NUMBER, Double.Parse(_source.Substring(start, current)));
+            AddToken(TokenType.NUMBER, Double.Parse(_source.Substring(_start, _current)));
         }
 
         // For string literals.
@@ -144,13 +144,13 @@ namespace Lox
         {
             while (Peek() != '"' && !IsAtEnd())
             {
-                if (Peek() == '\n') line++;
+                if (Peek() == '\n') _line++;
                 Advance();
             }
 
             if (IsAtEnd())
             {
-                Lox.Error(line, "Unterminated string.");
+                Lox.Error(_line, "Unterminated string.");
                 return;
             }
 
@@ -158,19 +158,19 @@ namespace Lox
             Advance();
 
             // Trim the surrounding quotes.
-            string value = _source.Substring(start + 1, current - 1);
+            string value = _source.Substring(_start + 1, _current - 1);
             AddToken(TokenType.STRING, value);
         }
 
         private char Advance()
         {
-            return _source[current++]; 
+            return _source[_current++]; 
         }
 
         private void AddToken(TokenType type, object literal)
         {
-            string text = _source.Substring(start, current);
-            _tokens.Add(new Token(type, text, literal, line));
+            string text = _source.Substring(_start, _current);
+            _tokens.Add(new Token(type, text, literal, _line));
         }
 
         private void AddToken(TokenType type)
@@ -184,9 +184,9 @@ namespace Lox
         private bool Match(char expected)
         {
             if (IsAtEnd()) return false;
-            if (_source[current] != expected) return false;
+            if (_source[_current] != expected) return false;
 
-            current++;
+            _current++;
             return true;
         }
 
@@ -196,7 +196,7 @@ namespace Lox
         private char Peek()
         {
             if (IsAtEnd()) return '\0';
-            return _source[current];
+            return _source[_current];
         }
 
         /// <summary>
@@ -204,8 +204,8 @@ namespace Lox
         /// </summary>
         private char PeekNext()
         {
-            if (current + 1 >= _source.Length) return '\0';
-            return _source[current + 1];
+            if (_current + 1 >= _source.Length) return '\0';
+            return _source[_current + 1];
         }
 
         private bool IsAlpha(char c)
@@ -227,7 +227,7 @@ namespace Lox
 
         private bool IsAtEnd()
         {
-            return current >= _source.Length;
+            return _current >= _source.Length;
         }
     }
 }
